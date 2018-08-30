@@ -1,0 +1,338 @@
+================================================
+Poking at an (entry-level) business alarm system
+================================================
+
+:Date: 2018-08
+:Author: @rfc6919
+:Audience: sdr-melbourne 2018-08-30
+
+.. SectNum::
+.. Contents::
+
+*********
+Who Am I?
+*********
+
+- I'm Russ
+- @rfc6919
+- @rfc6919@mastodon.social
+
+*************
+What and Why?
+*************
+
+- Security systems are interesting
+- Let's look at an alarm
+- Fixed-code systems are boring
+- Let's look at something that's (hopefully) not entirely crap
+
+**************
+The Target (1)
+**************
+
+- Manufactured (or just assembled/packaged?) in North America
+- Australian importer/distributor
+- Alarm monitoring providers as resellers (also Amazon retailers, ofc)
+- Not "secure site" level
+- I notice the keypads in retail, small offices
+
+**************
+The Target (2)
+**************
+
+Console
+  Central unit, siren, phone line, GSM/3G
+
+Control panel/keypad/fob
+  Arm/disarm, status display, end-user management
+
+Sensors/sirens
+  Motion, door/window, smoke, glassbreak, siren
+
+**************
+The Target (3)
+**************
+
+- 2-way comms (remote units are Tx/Rx)
+- Remote units require enrollment
+- "RF Jamming Detection" ("TROUBLE!")
+- 433MHz and `868MHz <https://www.acma.gov.au/Industry/Suppliers/Product-supply-and-compliance/Commonly-supplied-equipment/wi-fi-bluetooth-and-other-low-powered-radiocommunications-transmitters>`_ (!)
+
+Sounds reasonable, perhaps I won't get anywhere interesting without dumping the firmware.
+
+************
+Captures (1)
+************
+
+- 433.91MHz PWM ASK, 200µs/5kBd sub-symbol, 600µs/1.66kBd symbol
+- Preamble: 4 on, 13 cycles of off/on, 2 off, 6 on, 2 off
+- No apparent sync word
+- Data: 32 or 64 symbols ( 1=on/on/off, 0=on/off/off )
+- Trailer: 1 final pulse on
+- Remotes just send if they've got something to say
+- Console sends ~0.1s of on/off as a wakeup when it wants (possibly battery-powered) remotes to pay attention
+- luaradio bodge to capture on-air data (including signal strength), dump as json, then I can process/mangle with jq::
+
+   {
+     "timestamp":1535333985.1992,
+     "raw_payload":"1111010101010101010101010101010011111100 ...110...100... 1",
+     "signal_strength":0.19165825719635,
+     "payload":"...1...0..."
+   }
+
+.. image:: packet.png
+   :width: 768
+
+*************
+Captures (1a)
+*************
+
+- No fixed prefix in payload: no sync word? (but the preamble has a well-defined end)
+- No common prefixes in payload: no target address?
+- Small changes in payload function result in bit changes throughout payload data: no obvious command/address fields
+  (eg: person A arm vs. disarm, or person A arm vs. person B arm)
+- I guess the comms are encrypted, or at least scrambled/whitened (per-site code?)
+
+*************
+Captures (1b)
+*************
+
+.. NOTE::
+  I *won't* be showing you any actual packet payloads.
+
+Packets will be labeled '``[A-Z]x``' for 32-bit, '``[A-Z][A-Z]``' for 64-bit, and '``**``' for wakeup. All packets with the same label (eg: ``Gx``) have exactly the same payload.
+
+I've observed 33 distinct data packets across a month of data collection - clearly the packets are only scrambled/whitened. Perhaps this system isn't as good as I'd hoped. :(
+
+*****************
+Captures (2): BAU
+*****************
+
+Every ~4 minutes there's a wakeup, then a sequence of 8 packets (``Ax`` to ``Hx``) taking ~2 seconds in total::
+
+  { "t":"01:03:32", "l":"**", "s":1.2713464065906 }
+  { "t":"01:03:32", "l":"Ax", "s":1.2709111290820 }
+  { "t":"01:03:32", "l":"Bx", "s":1.2712075359681 }
+  { "t":"01:03:33", "l":"Cx", "s":1.2711559108325 }
+  { "t":"01:03:33", "l":"Dx", "s":1.2712458040979 }
+  { "t":"01:03:33", "l":"Ex", "s":1.2712313979864 }
+  { "t":"01:03:33", "l":"Fx", "s":1.2712849719184 }
+  { "t":"01:03:34", "l":"Gx", "s":1.2711228281260 }
+  { "t":"01:03:34", "l":"Hx", "s":1.2711061156458 }
+  { "t":"01:07:32", "l":"**", "s":1.2711701258536 }
+  { "t":"01:07:32", "l":"Ax", "s":1.2711627746330 }
+  { "t":"01:07:33", "l":"Bx", "s":1.2709761156755 }
+  { "t":"01:07:33", "l":"Cx", "s":1.2712219527790 }
+  { "t":"01:07:33", "l":"Dx", "s":1.2711558938026 }
+  { "t":"01:07:33", "l":"Ex", "s":1.2712194207642 }
+  { "t":"01:07:34", "l":"Fx", "s":1.2710211532457 }
+  { "t":"01:07:34", "l":"Gx", "s":1.2710942510102 }
+  { "t":"01:07:34", "l":"Hx", "s":1.2706489513318 }
+  { "t":"01:11:33", "l":"**", "s":1.2712407092894 }
+  { "t":"01:11:33", "l":"Ax", "s":1.2710229281117 }
+  { "t":"01:11:33", "l":"Bx", "s":1.2713165809126 }
+  { "t":"01:11:33", "l":"Cx", "s":1.2709069439343 }
+  { "t":"01:11:34", "l":"Dx", "s":1.2712285568317 }
+  { "t":"01:11:34", "l":"Ex", "s":1.2710255781809 }
+  { "t":"01:11:34", "l":"Fx", "s":1.2712944081851 }
+  { "t":"01:11:34", "l":"Gx", "s":1.2709522181087 }
+  { "t":"01:11:35", "l":"Hx", "s":1.2714084022575 }
+
+********************
+Captures (3): Motion
+********************
+
+While there's motion, the motion sensor sends a stream of packets (``Mx``) every ~0.5s::
+
+  { "t":"01:00:03", "l":"Mx", "s":0.19761674747699 }
+  { "t":"01:00:03", "l":"Mx", "s":0.19134663707680 }
+  { "t":"01:00:04", "l":"Mx", "s":0.18475599400699 }
+  { "t":"01:00:04", "l":"Mx", "s":0.17764736960332 }
+  { "t":"01:00:05", "l":"Mx", "s":0.18219866003427 }
+  { "t":"01:00:05", "l":"Mx", "s":0.19228762346837 }
+  { "t":"01:00:05", "l":"Mx", "s":0.20365504361689 }
+  { "t":"01:00:06", "l":"Mx", "s":0.17590477214091 }
+  { "t":"01:01:06", "l":"Mx", "s":0.20046661607921 }
+  { "t":"01:01:06", "l":"Mx", "s":0.21990364127689 }
+  { "t":"01:01:07", "l":"Mx", "s":0.20108292127649 }
+  { "t":"01:01:07", "l":"Mx", "s":0.19317794611884 }
+  { "t":"01:01:07", "l":"Mx", "s":0.19980143921243 }
+  { "t":"01:01:08", "l":"Mx", "s":0.18883255082700 }
+  { "t":"01:01:08", "l":"Mx", "s":0.18816887173388 }
+  { "t":"01:01:09", "l":"Mx", "s":0.19139267442127 }
+
+********************
+Captures (4): Disarm
+********************
+
+::
+
+  { "t":"00:22:31", "l":"AK", "s":0.19010887763673 }
+  { "t":"00:22:31", "l":"Ix", "s":1.27115733999960 }
+  { "t":"00:22:31", "l":"Ix", "s":1.27084919967150 }
+  { "t":"00:22:33", "l":"AJ", "s":1.27067109920360 }
+  { "t":"00:22:33", "l":"Kx", "s":0.34753355619154 }
+  { "t":"00:22:33", "l":"AJ", "s":1.27106389116360 }
+  { "t":"00:22:33", "l":"Kx", "s":0.32851465438542 }
+  { "t":"00:22:33", "l":"AC", "s":1.27080483689450 }
+  { "t":"00:22:33", "l":"Kx", "s":0.31252986663266 }
+  { "t":"00:22:33", "l":"AC", "s":1.27091753302200 }
+  { "t":"00:22:33", "l":"Kx", "s":0.31681447436935 }
+  { "t":"00:22:33", "l":"AB", "s":1.27072021656470 }
+  { "t":"00:22:33", "l":"Kx", "s":0.33324523623052 }
+  { "t":"00:22:34", "l":"AB", "s":1.27073594322780 }
+  { "t":"00:22:34", "l":"Kx", "s":0.33795091901955 }
+  { "t":"00:22:34", "l":"AC", "s":1.27094848137910 }
+  { "t":"00:22:34", "l":"Kx", "s":0.33743255154083 }
+  { "t":"00:22:34", "l":"AC", "s":1.27062752662280 }
+  { "t":"00:22:34", "l":"Kx", "s":0.33078964054585 }
+
+::
+
+  { "t":"00:20:46", "l":"AK", "s":0.14561246347524 }
+  { "t":"00:20:46", "l":"Ix", "s":1.27077432525790 }
+  { "t":"00:20:46", "l":"Ix", "s":1.27117667386410 }
+  { "t":"00:20:46", "l":"AH", "s":1.27067896118740 }
+  { "t":"00:20:46", "l":"Kx", "s":0.15747543483188 }
+  { "t":"00:20:47", "l":"AH", "s":1.27096623854530 }
+  { "t":"00:20:47", "l":"Kx", "s":0.13380117214432 }
+  { "t":"00:20:47", "l":"AC", "s":1.27105418931350 }
+  { "t":"00:20:47", "l":"Kx", "s":0.13056822689740 }
+  { "t":"00:20:47", "l":"AC", "s":1.27060430067960 }
+  { "t":"00:20:47", "l":"Kx", "s":0.13104107838712 }
+  { "t":"00:20:47", "l":"AJ", "s":1.27091524777590 }
+  { "t":"00:20:47", "l":"Kx", "s":0.12551319785416 }
+  { "t":"00:20:47", "l":"AJ", "s":1.27074775519190 }
+  { "t":"00:20:48", "l":"Kx", "s":0.21396931398072 }
+  { "t":"00:20:48", "l":"AC", "s":1.27093991095370 }
+  { "t":"00:20:48", "l":"Kx", "s":0.18139598891139 }
+  { "t":"00:20:48", "l":"AC", "s":1.27067857348560 }
+  { "t":"00:20:48", "l":"Kx", "s":0.12208976341706 }
+  { "t":"00:20:48", "l":"AB", "s":1.27084016889560 }
+  { "t":"00:20:48", "l":"Kx", "s":0.75081624169099 }
+  { "t":"00:20:48", "l":"AB", "s":1.27075393755630 }
+  { "t":"00:20:49", "l":"Kx", "s":0.70063111891872 }
+  { "t":"00:20:49", "l":"AC", "s":1.27107110709860 }
+  { "t":"00:20:49", "l":"Kx", "s":0.72590991540959 }
+  { "t":"00:20:49", "l":"AC", "s":1.27091973568450 }
+  { "t":"00:20:49", "l":"Kx", "s":0.66028591441481 }
+
+*****************
+Disarm Comparison
+*****************
+
+======= ====== ======= ====== =
+     Run 1          Run 2     
+-------------- -------------- -
+Console Keypad Console Keypad
+======= ====== ======= ====== =
+\       AK             AK     ✅
+Ix             Ix             ✅
+Ix             Ix             ✅
+\              AH             ❗️
+\                      Kx     ❗️
+\              AH             ❗️
+\                      Kx     ❗️
+\              AC             ❗️
+\                      Kx     ❗️
+\              AC             ❗️
+\                      Kx     ❗️
+AJ             AJ             ✅
+\       Kx             Kx     ✅
+AJ             AJ             ✅
+\       Kx             Kx     ✅
+AC             AC             ✅
+\       Kx             Kx     ✅
+AC             AC             ✅
+\       Kx             Kx     ✅
+AB             AB             ✅
+\       Kx             Kx     ✅
+AB             AB             ✅
+\       Kx             Kx     ✅
+AC             AC             ✅
+\       Kx             Kx     ✅
+AC             AC             ✅
+\       Kx             Kx     ✅
+======= ====== ======= ====== =
+
+*****************
+Synthetic Disarms
+*****************
+
+Disarms are repeatable enough that I should be able to synthesise one. Simple, yeah?
+
+- Collect a disarm
+- Pretend I'm the keypad
+- Spit pre-cooked packets at the console
+- Win?
+- No win :(
+
+I couldn't make this work. Why not?
+
+- Timing isn't right?
+
+  - Entirely possible.
+
+- Attribution to keypad/console isn't right?
+
+  - Possible I guess?
+
+- I'm missing some other communication channel?
+
+  - Don't think so: couldn't find anything else in 433/868/902 or .au LIPD 915-928
+
+***********
+Why Disarm?
+***********
+
+- Shows in logs, somewhere I guess?
+- Alarm monitoring company earns their keep
+- Someone gets a phone call?
+
+****************
+Alternatively...
+****************
+
+- Motion alert is a (per site?) static packet
+- Reflexive jamming!
+- Watch for the distinctive start of one of these, when you see it jam until the end
+- Needs *fast* turnaround between detection and jamming
+
+  - 27ms packet, can identify in 12.8ms, need to turnaround in < 14.2ms
+
+- I guess I'm writing CC1111 firmware now :(
+
+**********************************
+Or, alternatively alternatively...
+**********************************
+
+- Console heartbeat is every 4 minutes, like clockwork
+- Trivially detectable (static pattern every time)
+- What if we just jam everything whenever the watchdog isn't looking?
+
+**************************
+What's the time, Mr. Wolf?
+**************************
+
+::
+
+  10 wait for heartbeat to complete
+  20 jam for 230 seconds, loot the joint
+  30 stand still
+  40 goto 10
+
+And you get 3m50s to do whatever you like, stand still for 10 seconds, and off you go again. Works great, no TROUBLE!
+
+****
+TODO
+****
+
+- Buy a keypad (but no console to enroll against)
+- Move keypad out of range, relay comms (disruptive to alarm owner)
+- Dump keypad RAM/firmware (can't be arsed)
+
+*******
+Finally
+*******
+
+- Alarm owner doesn't care: their threat is junkies looking for crap to sell, not hacking ninjas

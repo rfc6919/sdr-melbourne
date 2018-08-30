@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="generator" content="Docutils 0.13.1: http://docutils.sourceforge.net/" />
+<title>Poking at an (entry-level) business alarm system</title>
+<meta name="author" content="&#64;rfc6919" />
+<style type="text/css">
+
+/* Minimal style sheet for the HTML output of Docutils.                    */
+/*                                                                         */
+/* :Author: Günter Milde, based on html4css1.css by David Goodger          */
+/* :Id: $Id: minimal.css 7952 2016-07-26 18:15:59Z milde $               */
+/* :Copyright: © 2015 Günter Milde.                                        */
+/* :License: Released under the terms of the `2-Clause BSD license`_,      */
+/*    in short:                                                            */
+/*                                                                         */
+/*    Copying and distribution of this file, with or without modification, */
+/*    are permitted in any medium without royalty provided the copyright   */
+/*    notice and this notice are preserved.                                */
+/*                                                                         */
+/*    This file is offered as-is, without any warranty.                    */
+/*                                                                         */
+/* .. _2-Clause BSD license: http://www.spdx.org/licenses/BSD-2-Clause     */
+
+/* This CSS2.1_ stylesheet defines rules for Docutils elements without    */
+/* HTML equivalent. It is required to make the document semantic visible. */
+/*                                                                        */
+/* .. _CSS2.1: http://www.w3.org/TR/CSS2                                  */
+/* .. _validates: http://jigsaw.w3.org/css-validator/validator$link       */
+
+/* alignment of text and inline objects inside block objects*/
+.align-left   { text-align: left; }
+.align-right  { text-align: right; }
+.align-center { clear: both; text-align: center; }
+.align-top    { vertical-align: top; }
+.align-middle { vertical-align: middle; }
+.align-bottom { vertical-align: bottom; }
+
+/* titles */
+h1.title, p.subtitle {
+  text-align: center;
+}
+p.admonition-title,
+p.topic-title,
+p.sidebar-title,
+p.rubric,
+p.system-message-title {
+  font-weight: bold;
+}
+h1 + p.subtitle,
+h1 + p.section-subtitle {
+  font-size: 1.6em;
+}
+h2 + p.section-subtitle { font-size: 1.28em; }
+p.subtitle,
+p.section-subtitle,
+p.sidebar-subtitle {
+  font-weight: bold;
+  margin-top: -0.5em;
+}
+p.sidebar-title,
+p.rubric {
+  font-size: larger;
+}
+p.rubric { color: maroon; }
+a.toc-backref {
+  color: black;
+  text-decoration: none; }
+
+/* Warnings, Errors */
+div.caution p.admonition-title,
+div.attention p.admonition-title,
+div.danger p.admonition-title,
+div.error p.admonition-title,
+div.warning p.admonition-title,
+div.system-messages h1,
+div.error,
+span.problematic,
+p.system-message-title {
+  color: red;
+}
+
+/* inline literals */
+span.docutils.literal {
+  font-family: monospace;
+  white-space: pre-wrap;
+}
+/* do not wraph at hyphens and similar: */
+.literal > span.pre { white-space: nowrap; }
+
+/* Lists */
+
+/* compact and simple lists: no margin between items */
+.simple  li, .compact li,
+.simple  ul, .compact ul,
+.simple  ol, .compact ol,
+.simple > li p, .compact > li p,
+dl.simple > dd, dl.compact > dd {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Table of Contents */
+div.topic.contents { margin: 0; }
+ul.auto-toc {
+  list-style-type: none;
+  padding-left: 1.5em; }
+
+/* Enumerated Lists */
+ol.arabic     { list-style: decimal }
+ol.loweralpha { list-style: lower-alpha }
+ol.upperalpha { list-style: upper-alpha }
+ol.lowerroman { list-style: lower-roman }
+ol.upperroman { list-style: upper-roman }
+
+dt span.classifier { font-style: italic }
+dt span.classifier:before {
+  font-style: normal;
+  margin: 0.5em;
+  content: ":";
+}
+
+/* Field Lists and drivatives */
+/* bold field name, content starts on the same line */
+dl.field-list > dt,
+dl.option-list > dt,
+dl.docinfo > dt,
+dl.footnote > dt,
+dl.citation > dt {
+  font-weight: bold;
+  clear: left;
+  float: left;
+  margin: 0;
+  padding: 0;
+  padding-right: 0.5em;
+}
+/* Offset for field content (corresponds to the --field-name-limit option) */
+dl.field-list > dd,
+dl.option-list > dd,
+dl.docinfo > dd {
+  margin-left:  9em; /* ca. 14 chars in the test examples */
+}
+/* start field-body on a new line after long field names */
+dl.field-list > dd > *:first-child,
+dl.option-list > dd > *:first-child
+{
+  display: inline-block;
+  width: 100%;
+  margin: 0;
+}
+/* field names followed by a colon */
+dl.field-list > dt:after,
+dl.docinfo > dt:after {
+  content: ":";
+}
+
+/* Bibliographic Fields (docinfo) */
+pre.address { font: inherit; }
+dd.authors > p { margin: 0; }
+
+/* Option Lists */
+dl.option-list { margin-left: 40px; }
+dl.option-list > dt { font-weight: normal; }
+span.option { white-space: nowrap; }
+
+/* Footnotes and Citations  */
+dl.footnote.superscript > dd {margin-left: 1em; }
+dl.footnote.brackets > dd {margin-left: 2em; }
+dl > dt.label { font-weight: normal; }
+a.footnote-reference.brackets:before,
+dt.label > span.brackets:before { content: "["; }
+a.footnote-reference.brackets:after,
+dt.label > span.brackets:after { content: "]"; }
+a.footnote-reference.superscript,
+dl.footnote.superscript > dt.label {
+  vertical-align: super;
+  font-size: smaller;
+}
+dt.label > span.fn-backref { margin-left: 0.2em; }
+dt.label > span.fn-backref > a { font-style: italic; }
+
+/* Line Blocks */
+div.line-block { display: block; }
+div.line-block div.line-block {
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: 40px;
+}
+
+/* Figures, Images, and Tables */
+.figure.align-left,
+img.align-left,
+object.align-left,
+table.align-left {
+  margin-right: auto;
+}
+.figure.align-center,
+img.align-center,
+object.align-center {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+table.align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+.figure.align-right,
+img.align-right,
+object.align-right,
+table.align-right {
+  margin-left: auto;
+}
+/* reset inner alignment in figures and tables */
+div.align-left, div.align-center, div.align-right,
+table.align-left, table.align-center, table.align-right
+{ text-align: inherit }
+
+/* Admonitions and System Messages */
+div.admonition,
+div.system-message,
+div.sidebar{
+  margin: 40px;
+  border: medium outset;
+  padding-right: 1em;
+  padding-left: 1em;
+}
+
+/* Sidebar */
+div.sidebar {
+  width: 30%;
+  max-width: 26em;
+  float: right;
+  clear: right;
+}
+
+/* Text Blocks */
+div.topic,
+pre.literal-block,
+pre.doctest-block,
+pre.math,
+pre.code {
+  margin-right: 40px;
+  margin-left: 40px;
+}
+pre.code .ln { color: gray; } /* line numbers */
+
+/* Tables */
+table { border-collapse: collapse; }
+td, th {
+  border-style: solid;
+  border-color: silver;
+  padding: 0 1ex;
+  border-width: thin;
+}
+td > p:first-child, th > p:first-child { margin-top: 0; }
+td > p, th > p { margin-bottom: 0; }
+
+table > caption {
+  text-align: left;
+  margin-bottom: 0.25em
+}
+
+table.borderless td, table.borderless th {
+  border: 0;
+  padding: 0;
+  padding-right: 0.5em /* separate table cells */
+}
+
+</style>
+<style type="text/css">
+
+/* CSS31_ style sheet for the output of Docutils HTML writers.             */
+/* Rules for easy reading and pre-defined style variants.		   */
+/*                                                                         */
+/* :Author: Günter Milde, based on html4css1.css by David Goodger          */
+/* :Id: $Id: plain.css 7952 2016-07-26 18:15:59Z milde $               */
+/* :Copyright: © 2015 Günter Milde.                                        */
+/* :License: Released under the terms of the `2-Clause BSD license`_,      */
+/*    in short:                                                            */
+/*                                                                         */
+/*    Copying and distribution of this file, with or without modification, */
+/*    are permitted in any medium without royalty provided the copyright   */
+/*    notice and this notice are preserved.                                */
+/*    	     	      	     	 					   */
+/*    This file is offered as-is, without any warranty.                    */
+/*                                                                         */
+/* .. _2-Clause BSD license: http://www.spdx.org/licenses/BSD-2-Clause     */
+/* .. _CSS3: http://www.w3.org/TR/CSS3		        		   */
+
+
+/* Document Structure */
+/* ****************** */
+
+/* "page layout" */
+body {
+  padding: 0 5%;
+  margin: 8px 0;
+}
+div.document {
+  line-height:1.3;
+  counter-reset: table;
+  /* counter-reset: figure; */
+  /* avoid long lines --> better reading */
+  /* OTOH: lines should not be too short because of missing hyphenation, */
+  max-width: 50em;
+  margin: auto;
+}
+
+/* Sections */
+
+/* Transitions */
+
+hr.docutils {
+  width: 80%;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  clear: both;
+}
+
+/* Paragraphs               */
+/* ==========               */
+
+/* vertical space (parskip) */
+p, ol, ul, dl,
+div.line-block,
+table{
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+h1, h2, h3, h4, h5, h6,
+dl > dd {
+  margin-bottom: 0.5em;
+}
+
+/* Lists                    */
+/* ==========               */
+
+/* Definition Lists         */
+
+dl > dd p:first-child { margin-top: 0; }
+/* :last-child is not part of CSS 2.1 (introduced in CSS 3) */
+/* dl > dd p:last-child  { margin-bottom: 0; } */
+
+/* lists nested in definition lists */
+/* :only-child is not part of CSS 2.1 (introduced in CSS 3) */
+dd > ul:only-child, dd > ol:only-child { padding-left: 1em; }
+
+/* Description Lists */
+/* styled like in most dictionaries, encyclopedias etc. */
+dl.description > dt {
+  font-weight: bold;
+  clear: left;
+  float: left;
+  margin: 0;
+  padding: 0;
+  padding-right: 0.5em;
+}
+
+/* Field Lists */
+
+/* example for custom field-name width */
+dl.field-list.narrow > dd {
+  margin-left: 5em;
+}
+/* run-in: start field-body on same line after long field names */
+dl.field-list.run-in > dd p {
+  display: block;
+}
+
+/* Bibliographic Fields */
+
+/* generally, bibliographic fields use special definition list dl.docinfo */
+/* but dedication and abstract are placed into "topic" divs */
+div.abstract p.topic-title {
+  text-align: center;
+}
+div.dedication {
+  margin: 2em 5em;
+  text-align: center;
+  font-style: italic;
+}
+div.dedication p.topic-title {
+  font-style: normal;
+}
+
+/* Citations */
+dl.citation dt.label {
+  font-weight: bold;
+}
+span.fn-backref {
+  font-weight: normal;
+}
+
+/* Text Blocks           */
+/* ============          */
+
+/* Literal Blocks           */
+pre.literal-block, pre.doctest-block,
+pre.math, pre.code {
+  margin-left: 1.5em;
+  margin-right: 1.5em
+}
+
+/* Block Quotes             */
+
+blockquote,
+div.topic {
+  margin-left: 1.5em;
+  margin-right: 1.5em
+}
+blockquote > table,
+div.topic > table {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+blockquote p.attribution,
+div.topic p.attribution {
+  text-align: right;
+  margin-left: 20%;
+}
+
+/* Tables                   */
+/* ======                   */
+
+/* th { vertical-align: bottom; } */
+
+table tr { text-align: left; }
+
+/* "booktabs" style (no vertical lines) */
+table.booktabs {
+  border: 0;
+  border-top: 2px solid;
+  border-bottom: 2px solid;
+  border-collapse: collapse;
+}
+table.booktabs * {
+  border: 0;
+}
+table.booktabs th {
+  border-bottom: thin solid;
+}
+
+/* numbered tables (counter defined in div.document) */
+table.numbered > caption:before {
+  counter-increment: table;
+  content: "Table " counter(table) ": ";
+  font-weight: bold;
+}
+
+/* Explicit Markup Blocks   */
+/* ======================   */
+
+/* Footnotes and Citations  */
+/* -----------------------  */
+
+/* line on the left */
+dl.footnote {
+  padding-left: 1ex;
+  border-left: solid;
+  border-left-width: thin;
+}
+
+/* Directives               */
+/* ----------               */
+
+/* Body Elements            */
+/* ~~~~~~~~~~~~~            */
+
+/* Images and Figures */
+
+/* let content flow to the side of aligned images and figures */
+.figure.align-left,
+img.align-left,
+object.align-left {
+  display: block;
+  clear: left;
+  float: left;
+  margin-right: 1em
+}
+.figure.align-right,
+img.align-right,
+object.align-right {
+  display: block;
+  clear: right;
+  float: right;
+  margin-left: 1em
+}
+/* Stop floating sidebars, images and figures at section level 1,2,3 */
+h1, h2, h3 { clear: both; }
+
+/* Sidebar */
+
+/* Move into the margin. In a layout with fixed margins, */
+/* it can be moved into the margin completely.		 */
+div.sidebar {
+  width: 30%;
+  max-width: 26em;
+  margin-left: 1em;
+  margin-right: -5.5%;
+  background-color: #ffffee ;
+}
+
+/* Code                     */
+
+pre.code, code { background-color: #eeeeee }
+pre.code .ln { color: gray; } /* line numbers */
+/* basic highlighting: for a complete scheme, see */
+/* http://docutils.sourceforge.net/sandbox/stylesheets/ */
+pre.code .comment, code .comment { color: #5C6576 }
+pre.code .keyword, code .keyword { color: #3B0D06; font-weight: bold }
+pre.code .literal.string, code .literal.string { color: #0C5404 }
+pre.code .name.builtin, code .name.builtin { color: #352B84 }
+pre.code .deleted, code .deleted { background-color: #DEB0A1}
+pre.code .inserted, code .inserted { background-color: #A3D289}
+
+/* Math                     */
+/* styled separately (see math.css for math-output=HTML) */
+
+/* Epigraph                 */
+/* Highlights               */
+/* Pull-Quote               */
+/* Compound Paragraph       */
+/* Container                */
+
+/* can be styled in a custom stylesheet */
+
+/* Document Header and Footer */
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller;
+}
+
+/* Inline Markup            */
+/* =============            */
+
+/* Emphasis                 */
+/*   em                     */
+/* Strong Emphasis          */
+/*   strong		    */
+/* Interpreted Text         */
+/*   span.interpreted  	    */
+/* Title Reference 	    */
+/*   cite		    */
+/* Inline Literals          */
+/* possible values: normal, nowrap, pre, pre-wrap, pre-line */
+/*   span.docutils.literal { white-space: pre-wrap; } */
+
+/* Hyperlink References     */
+a { text-decoration: none; }
+
+/* External Targets         */
+/*   span.target.external   */
+/* Internal Targets  	    */
+/*   span.target.internal   */
+/* Footnote References      */
+/*   a.footnote-reference   */
+/* Citation References      */
+/*   a.citation-reference   */
+
+</style>
+</head>
+<body>
+<div class="document" id="poking-at-an-entry-level-business-alarm-system">
+<h1 class="title">Poking at an (entry-level) business alarm system</h1>
+
+<dl class="docinfo simple">
+<dt class="date">Date</dt>
+<dd class="date">2018-08</dd>
+<dt class="author">Author</dt>
+<dd class="author"><p>&#64;rfc6919</p></dd>
+<dt class="audience">Audience</dt>
+<dd class="audience"><p>sdr-melbourne 2018-08-30</p>
+</dd>
+</dl>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="auto-toc simple">
+<li><p><a class="reference internal" href="#who-am-i" id="id1"><span class="sectnum">1</span> Who Am I?</a></p></li>
+<li><p><a class="reference internal" href="#what-and-why" id="id2"><span class="sectnum">2</span> What and Why?</a></p></li>
+<li><p><a class="reference internal" href="#the-target-1" id="id3"><span class="sectnum">3</span> The Target (1)</a></p></li>
+<li><p><a class="reference internal" href="#the-target-2" id="id4"><span class="sectnum">4</span> The Target (2)</a></p></li>
+<li><p><a class="reference internal" href="#the-target-3" id="id5"><span class="sectnum">5</span> The Target (3)</a></p></li>
+<li><p><a class="reference internal" href="#captures-1" id="id6"><span class="sectnum">6</span> Captures (1)</a></p></li>
+<li><p><a class="reference internal" href="#captures-1a" id="id7"><span class="sectnum">7</span> Captures (1a)</a></p></li>
+<li><p><a class="reference internal" href="#captures-1b" id="id8"><span class="sectnum">8</span> Captures (1b)</a></p></li>
+<li><p><a class="reference internal" href="#captures-2-bau" id="id9"><span class="sectnum">9</span> Captures (2): BAU</a></p></li>
+<li><p><a class="reference internal" href="#captures-3-motion" id="id10"><span class="sectnum">10</span> Captures (3): Motion</a></p></li>
+<li><p><a class="reference internal" href="#captures-4-disarm" id="id11"><span class="sectnum">11</span> Captures (4): Disarm</a></p></li>
+<li><p><a class="reference internal" href="#disarm-comparison" id="id12"><span class="sectnum">12</span> Disarm Comparison</a></p></li>
+<li><p><a class="reference internal" href="#synthetic-disarms" id="id13"><span class="sectnum">13</span> Synthetic Disarms</a></p></li>
+<li><p><a class="reference internal" href="#why-disarm" id="id14"><span class="sectnum">14</span> Why Disarm?</a></p></li>
+<li><p><a class="reference internal" href="#alternatively" id="id15"><span class="sectnum">15</span> Alternatively...</a></p></li>
+<li><p><a class="reference internal" href="#or-alternatively-alternatively" id="id16"><span class="sectnum">16</span> Or, alternatively alternatively...</a></p></li>
+<li><p><a class="reference internal" href="#what-s-the-time-mr-wolf" id="id17"><span class="sectnum">17</span> What's the time, Mr. Wolf?</a></p></li>
+<li><p><a class="reference internal" href="#todo" id="id18"><span class="sectnum">18</span> TODO</a></p></li>
+<li><p><a class="reference internal" href="#finally" id="id19"><span class="sectnum">19</span> Finally</a></p></li>
+</ul>
+</div>
+<div class="section" id="who-am-i">
+<h1><a class="toc-backref" href="#id1"><span class="sectnum">1</span> Who Am I?</a></h1>
+<ul class="simple">
+<li><p>I'm Russ</p></li>
+<li><p>&#64;rfc6919</p></li>
+<li><p>&#64;rfc6919&#64;mastodon.social</p></li>
+</ul>
+</div>
+<div class="section" id="what-and-why">
+<h1><a class="toc-backref" href="#id2"><span class="sectnum">2</span> What and Why?</a></h1>
+<ul class="simple">
+<li><p>Security systems are interesting</p></li>
+<li><p>Let's look at an alarm</p></li>
+<li><p>Fixed-code systems are boring</p></li>
+<li><p>Let's look at something that's (hopefully) not entirely crap</p></li>
+</ul>
+</div>
+<div class="section" id="the-target-1">
+<h1><a class="toc-backref" href="#id3"><span class="sectnum">3</span> The Target (1)</a></h1>
+<ul class="simple">
+<li><p>Manufactured (or just assembled/packaged?) in North America</p></li>
+<li><p>Australian importer/distributor</p></li>
+<li><p>Alarm monitoring providers as resellers (also Amazon retailers, ofc)</p></li>
+<li><p>Not &quot;secure site&quot; level</p></li>
+<li><p>I notice the keypads in retail, small offices</p></li>
+</ul>
+</div>
+<div class="section" id="the-target-2">
+<h1><a class="toc-backref" href="#id4"><span class="sectnum">4</span> The Target (2)</a></h1>
+<dl class="simple">
+<dt>Console</dt>
+<dd><p>Central unit, siren, phone line, GSM/3G</p>
+</dd>
+<dt>Control panel/keypad/fob</dt>
+<dd><p>Arm/disarm, status display, end-user management</p>
+</dd>
+<dt>Sensors/sirens</dt>
+<dd><p>Motion, door/window, smoke, glassbreak, siren</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="the-target-3">
+<h1><a class="toc-backref" href="#id5"><span class="sectnum">5</span> The Target (3)</a></h1>
+<ul class="simple">
+<li><p>2-way comms (remote units are Tx/Rx)</p></li>
+<li><p>Remote units require enrollment</p></li>
+<li><p>&quot;RF Jamming Detection&quot; (&quot;TROUBLE!&quot;)</p></li>
+<li><p>433MHz and <a class="reference external" href="https://www.acma.gov.au/Industry/Suppliers/Product-supply-and-compliance/Commonly-supplied-equipment/wi-fi-bluetooth-and-other-low-powered-radiocommunications-transmitters">868MHz</a> (!)</p></li>
+</ul>
+<p>Sounds reasonable, perhaps I won't get anywhere interesting without dumping the firmware.</p>
+</div>
+<div class="section" id="captures-1">
+<h1><a class="toc-backref" href="#id6"><span class="sectnum">6</span> Captures (1)</a></h1>
+<ul>
+<li><p>433.91MHz PWM ASK, 200µs/5kBd sub-symbol, 600µs/1.66kBd symbol</p></li>
+<li><p>Preamble: 4 on, 13 cycles of off/on, 2 off, 6 on, 2 off</p></li>
+<li><p>No apparent sync word</p></li>
+<li><p>Data: 32 or 64 symbols ( 1=on/on/off, 0=on/off/off )</p></li>
+<li><p>Trailer: 1 final pulse on</p></li>
+<li><p>Remotes just send if they've got something to say</p></li>
+<li><p>Console sends ~0.1s of on/off as a wakeup when it wants (possibly battery-powered) remotes to pay attention</p></li>
+<li><p>luaradio bodge to capture on-air data (including signal strength), dump as json, then I can process/mangle with jq:</p>
+<pre class="literal-block">{
+  &quot;timestamp&quot;:1535333985.1992,
+  &quot;raw_payload&quot;:&quot;1111010101010101010101010101010011111100 ...110...100... 1&quot;,
+  &quot;signal_strength&quot;:0.19165825719635,
+  &quot;payload&quot;:&quot;...1...0...&quot;
+}</pre>
+</li>
+</ul>
+<img alt="packet.png" src="packet.png" style="width: 768px;" />
+</div>
+<div class="section" id="captures-1a">
+<h1><a class="toc-backref" href="#id7"><span class="sectnum">7</span> Captures (1a)</a></h1>
+<ul class="simple">
+<li><p>No fixed prefix in payload: no sync word? (but the preamble has a well-defined end)</p></li>
+<li><p>No common prefixes in payload: no target address?</p></li>
+<li><p>Small changes in payload function result in bit changes throughout payload data: no obvious command/address fields
+(eg: person A arm vs. disarm, or person A arm vs. person B arm)</p></li>
+<li><p>I guess the comms are encrypted, or at least scrambled/whitened (per-site code?)</p></li>
+</ul>
+</div>
+<div class="section" id="captures-1b">
+<h1><a class="toc-backref" href="#id8"><span class="sectnum">8</span> Captures (1b)</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>I <em>won't</em> be showing you any actual packet payloads.</p>
+</div>
+<p>Packets will be labeled '<span class="docutils literal"><span class="pre">[A-Z]x</span></span>' for 32-bit, '<span class="docutils literal"><span class="pre">[A-Z][A-Z]</span></span>' for 64-bit, and '<span class="docutils literal">**</span>' for wakeup. All packets with the same label (eg: <span class="docutils literal">Gx</span>) have exactly the same payload.</p>
+<p>I've observed 33 distinct data packets across a month of data collection - clearly the packets are only scrambled/whitened. Perhaps this system isn't as good as I'd hoped. :(</p>
+</div>
+<div class="section" id="captures-2-bau">
+<h1><a class="toc-backref" href="#id9"><span class="sectnum">9</span> Captures (2): BAU</a></h1>
+<p>Every ~4 minutes there's a wakeup, then a sequence of 8 packets (<span class="docutils literal">Ax</span> to <span class="docutils literal">Hx</span>) taking ~2 seconds in total:</p>
+<pre class="literal-block">{ &quot;t&quot;:&quot;01:03:32&quot;, &quot;l&quot;:&quot;**&quot;, &quot;s&quot;:1.2713464065906 }
+{ &quot;t&quot;:&quot;01:03:32&quot;, &quot;l&quot;:&quot;Ax&quot;, &quot;s&quot;:1.2709111290820 }
+{ &quot;t&quot;:&quot;01:03:32&quot;, &quot;l&quot;:&quot;Bx&quot;, &quot;s&quot;:1.2712075359681 }
+{ &quot;t&quot;:&quot;01:03:33&quot;, &quot;l&quot;:&quot;Cx&quot;, &quot;s&quot;:1.2711559108325 }
+{ &quot;t&quot;:&quot;01:03:33&quot;, &quot;l&quot;:&quot;Dx&quot;, &quot;s&quot;:1.2712458040979 }
+{ &quot;t&quot;:&quot;01:03:33&quot;, &quot;l&quot;:&quot;Ex&quot;, &quot;s&quot;:1.2712313979864 }
+{ &quot;t&quot;:&quot;01:03:33&quot;, &quot;l&quot;:&quot;Fx&quot;, &quot;s&quot;:1.2712849719184 }
+{ &quot;t&quot;:&quot;01:03:34&quot;, &quot;l&quot;:&quot;Gx&quot;, &quot;s&quot;:1.2711228281260 }
+{ &quot;t&quot;:&quot;01:03:34&quot;, &quot;l&quot;:&quot;Hx&quot;, &quot;s&quot;:1.2711061156458 }
+{ &quot;t&quot;:&quot;01:07:32&quot;, &quot;l&quot;:&quot;**&quot;, &quot;s&quot;:1.2711701258536 }
+{ &quot;t&quot;:&quot;01:07:32&quot;, &quot;l&quot;:&quot;Ax&quot;, &quot;s&quot;:1.2711627746330 }
+{ &quot;t&quot;:&quot;01:07:33&quot;, &quot;l&quot;:&quot;Bx&quot;, &quot;s&quot;:1.2709761156755 }
+{ &quot;t&quot;:&quot;01:07:33&quot;, &quot;l&quot;:&quot;Cx&quot;, &quot;s&quot;:1.2712219527790 }
+{ &quot;t&quot;:&quot;01:07:33&quot;, &quot;l&quot;:&quot;Dx&quot;, &quot;s&quot;:1.2711558938026 }
+{ &quot;t&quot;:&quot;01:07:33&quot;, &quot;l&quot;:&quot;Ex&quot;, &quot;s&quot;:1.2712194207642 }
+{ &quot;t&quot;:&quot;01:07:34&quot;, &quot;l&quot;:&quot;Fx&quot;, &quot;s&quot;:1.2710211532457 }
+{ &quot;t&quot;:&quot;01:07:34&quot;, &quot;l&quot;:&quot;Gx&quot;, &quot;s&quot;:1.2710942510102 }
+{ &quot;t&quot;:&quot;01:07:34&quot;, &quot;l&quot;:&quot;Hx&quot;, &quot;s&quot;:1.2706489513318 }
+{ &quot;t&quot;:&quot;01:11:33&quot;, &quot;l&quot;:&quot;**&quot;, &quot;s&quot;:1.2712407092894 }
+{ &quot;t&quot;:&quot;01:11:33&quot;, &quot;l&quot;:&quot;Ax&quot;, &quot;s&quot;:1.2710229281117 }
+{ &quot;t&quot;:&quot;01:11:33&quot;, &quot;l&quot;:&quot;Bx&quot;, &quot;s&quot;:1.2713165809126 }
+{ &quot;t&quot;:&quot;01:11:33&quot;, &quot;l&quot;:&quot;Cx&quot;, &quot;s&quot;:1.2709069439343 }
+{ &quot;t&quot;:&quot;01:11:34&quot;, &quot;l&quot;:&quot;Dx&quot;, &quot;s&quot;:1.2712285568317 }
+{ &quot;t&quot;:&quot;01:11:34&quot;, &quot;l&quot;:&quot;Ex&quot;, &quot;s&quot;:1.2710255781809 }
+{ &quot;t&quot;:&quot;01:11:34&quot;, &quot;l&quot;:&quot;Fx&quot;, &quot;s&quot;:1.2712944081851 }
+{ &quot;t&quot;:&quot;01:11:34&quot;, &quot;l&quot;:&quot;Gx&quot;, &quot;s&quot;:1.2709522181087 }
+{ &quot;t&quot;:&quot;01:11:35&quot;, &quot;l&quot;:&quot;Hx&quot;, &quot;s&quot;:1.2714084022575 }</pre>
+</div>
+<div class="section" id="captures-3-motion">
+<h1><a class="toc-backref" href="#id10"><span class="sectnum">10</span> Captures (3): Motion</a></h1>
+<p>While there's motion, the motion sensor sends a stream of packets (<span class="docutils literal">Mx</span>) every ~0.5s:</p>
+<pre class="literal-block">{ &quot;t&quot;:&quot;01:00:03&quot;, &quot;l&quot;:&quot;Mx&quot;, &quot;s&quot;:0.19761674747699 }
+{ &quot;t&quot;:&quot;01:00:03&quot;, &quot;l&quot;:&quot;Mx&quot;, &quot;s&quot;:0.19134663707680 }
+{ &quot;t&quot;:&quot;01:00:04&quot;, &quot;l&quot;:&quot;Mx&quot;, &quot;s&quot;:0.18475599400699 }
+{ &quot;t&quot;:&quot;01:00:04&quot;, &quot;l&quot;:&quot;Mx&quot;, &quot;s&quot;:0.17764736960332 }
+{ &quot;t&quot;:&quot;01:00:05&quot;, &quot;l&quot;:&quot;Mx&quot;, &quot;s&quot;:0.18219866003427 }
+{ &quot;t&quot;:&quot;01:00:05&quot;, &quot;l&quot;:&quot;Mx&quot;, &quot;s&quot;:0.19228762346837 }
+{ &quot;t&quot;:&quot;01:00:05&quot;, &quot;l&quot;:&quot;Mx&quot;, &quot;s&quot;:0.20365504361689 }
+{ &quot;t&quot;:&quot;01:00:06&quot;, &quot;l&quot;:&quot;Mx&quot;, &quot;s&quot;:0.17590477214091 }
+{ &quot;t&quot;:&quot;01:01:06&quot;, &quot;l&quot;:&quot;Mx&quot;, &quot;s&quot;:0.20046661607921 }
+{ &quot;t&quot;:&quot;01:01:06&quot;, &quot;l&quot;:&quot;Mx&quot;, &quot;s&quot;:0.21990364127689 }
+{ &quot;t&quot;:&quot;01:01:07&quot;, &quot;l&quot;:&quot;Mx&quot;, &quot;s&quot;:0.20108292127649 }
+{ &quot;t&quot;:&quot;01:01:07&quot;, &quot;l&quot;:&quot;Mx&quot;, &quot;s&quot;:0.19317794611884 }
+{ &quot;t&quot;:&quot;01:01:07&quot;, &quot;l&quot;:&quot;Mx&quot;, &quot;s&quot;:0.19980143921243 }
+{ &quot;t&quot;:&quot;01:01:08&quot;, &quot;l&quot;:&quot;Mx&quot;, &quot;s&quot;:0.18883255082700 }
+{ &quot;t&quot;:&quot;01:01:08&quot;, &quot;l&quot;:&quot;Mx&quot;, &quot;s&quot;:0.18816887173388 }
+{ &quot;t&quot;:&quot;01:01:09&quot;, &quot;l&quot;:&quot;Mx&quot;, &quot;s&quot;:0.19139267442127 }</pre>
+</div>
+<div class="section" id="captures-4-disarm">
+<h1><a class="toc-backref" href="#id11"><span class="sectnum">11</span> Captures (4): Disarm</a></h1>
+<pre class="literal-block">{ &quot;t&quot;:&quot;00:22:31&quot;, &quot;l&quot;:&quot;AK&quot;, &quot;s&quot;:0.19010887763673 }
+{ &quot;t&quot;:&quot;00:22:31&quot;, &quot;l&quot;:&quot;Ix&quot;, &quot;s&quot;:1.27115733999960 }
+{ &quot;t&quot;:&quot;00:22:31&quot;, &quot;l&quot;:&quot;Ix&quot;, &quot;s&quot;:1.27084919967150 }
+{ &quot;t&quot;:&quot;00:22:33&quot;, &quot;l&quot;:&quot;AJ&quot;, &quot;s&quot;:1.27067109920360 }
+{ &quot;t&quot;:&quot;00:22:33&quot;, &quot;l&quot;:&quot;Kx&quot;, &quot;s&quot;:0.34753355619154 }
+{ &quot;t&quot;:&quot;00:22:33&quot;, &quot;l&quot;:&quot;AJ&quot;, &quot;s&quot;:1.27106389116360 }
+{ &quot;t&quot;:&quot;00:22:33&quot;, &quot;l&quot;:&quot;Kx&quot;, &quot;s&quot;:0.32851465438542 }
+{ &quot;t&quot;:&quot;00:22:33&quot;, &quot;l&quot;:&quot;AC&quot;, &quot;s&quot;:1.27080483689450 }
+{ &quot;t&quot;:&quot;00:22:33&quot;, &quot;l&quot;:&quot;Kx&quot;, &quot;s&quot;:0.31252986663266 }
+{ &quot;t&quot;:&quot;00:22:33&quot;, &quot;l&quot;:&quot;AC&quot;, &quot;s&quot;:1.27091753302200 }
+{ &quot;t&quot;:&quot;00:22:33&quot;, &quot;l&quot;:&quot;Kx&quot;, &quot;s&quot;:0.31681447436935 }
+{ &quot;t&quot;:&quot;00:22:33&quot;, &quot;l&quot;:&quot;AB&quot;, &quot;s&quot;:1.27072021656470 }
+{ &quot;t&quot;:&quot;00:22:33&quot;, &quot;l&quot;:&quot;Kx&quot;, &quot;s&quot;:0.33324523623052 }
+{ &quot;t&quot;:&quot;00:22:34&quot;, &quot;l&quot;:&quot;AB&quot;, &quot;s&quot;:1.27073594322780 }
+{ &quot;t&quot;:&quot;00:22:34&quot;, &quot;l&quot;:&quot;Kx&quot;, &quot;s&quot;:0.33795091901955 }
+{ &quot;t&quot;:&quot;00:22:34&quot;, &quot;l&quot;:&quot;AC&quot;, &quot;s&quot;:1.27094848137910 }
+{ &quot;t&quot;:&quot;00:22:34&quot;, &quot;l&quot;:&quot;Kx&quot;, &quot;s&quot;:0.33743255154083 }
+{ &quot;t&quot;:&quot;00:22:34&quot;, &quot;l&quot;:&quot;AC&quot;, &quot;s&quot;:1.27062752662280 }
+{ &quot;t&quot;:&quot;00:22:34&quot;, &quot;l&quot;:&quot;Kx&quot;, &quot;s&quot;:0.33078964054585 }</pre>
+<pre class="literal-block">{ &quot;t&quot;:&quot;00:20:46&quot;, &quot;l&quot;:&quot;AK&quot;, &quot;s&quot;:0.14561246347524 }
+{ &quot;t&quot;:&quot;00:20:46&quot;, &quot;l&quot;:&quot;Ix&quot;, &quot;s&quot;:1.27077432525790 }
+{ &quot;t&quot;:&quot;00:20:46&quot;, &quot;l&quot;:&quot;Ix&quot;, &quot;s&quot;:1.27117667386410 }
+{ &quot;t&quot;:&quot;00:20:46&quot;, &quot;l&quot;:&quot;AH&quot;, &quot;s&quot;:1.27067896118740 }
+{ &quot;t&quot;:&quot;00:20:46&quot;, &quot;l&quot;:&quot;Kx&quot;, &quot;s&quot;:0.15747543483188 }
+{ &quot;t&quot;:&quot;00:20:47&quot;, &quot;l&quot;:&quot;AH&quot;, &quot;s&quot;:1.27096623854530 }
+{ &quot;t&quot;:&quot;00:20:47&quot;, &quot;l&quot;:&quot;Kx&quot;, &quot;s&quot;:0.13380117214432 }
+{ &quot;t&quot;:&quot;00:20:47&quot;, &quot;l&quot;:&quot;AC&quot;, &quot;s&quot;:1.27105418931350 }
+{ &quot;t&quot;:&quot;00:20:47&quot;, &quot;l&quot;:&quot;Kx&quot;, &quot;s&quot;:0.13056822689740 }
+{ &quot;t&quot;:&quot;00:20:47&quot;, &quot;l&quot;:&quot;AC&quot;, &quot;s&quot;:1.27060430067960 }
+{ &quot;t&quot;:&quot;00:20:47&quot;, &quot;l&quot;:&quot;Kx&quot;, &quot;s&quot;:0.13104107838712 }
+{ &quot;t&quot;:&quot;00:20:47&quot;, &quot;l&quot;:&quot;AJ&quot;, &quot;s&quot;:1.27091524777590 }
+{ &quot;t&quot;:&quot;00:20:47&quot;, &quot;l&quot;:&quot;Kx&quot;, &quot;s&quot;:0.12551319785416 }
+{ &quot;t&quot;:&quot;00:20:47&quot;, &quot;l&quot;:&quot;AJ&quot;, &quot;s&quot;:1.27074775519190 }
+{ &quot;t&quot;:&quot;00:20:48&quot;, &quot;l&quot;:&quot;Kx&quot;, &quot;s&quot;:0.21396931398072 }
+{ &quot;t&quot;:&quot;00:20:48&quot;, &quot;l&quot;:&quot;AC&quot;, &quot;s&quot;:1.27093991095370 }
+{ &quot;t&quot;:&quot;00:20:48&quot;, &quot;l&quot;:&quot;Kx&quot;, &quot;s&quot;:0.18139598891139 }
+{ &quot;t&quot;:&quot;00:20:48&quot;, &quot;l&quot;:&quot;AC&quot;, &quot;s&quot;:1.27067857348560 }
+{ &quot;t&quot;:&quot;00:20:48&quot;, &quot;l&quot;:&quot;Kx&quot;, &quot;s&quot;:0.12208976341706 }
+{ &quot;t&quot;:&quot;00:20:48&quot;, &quot;l&quot;:&quot;AB&quot;, &quot;s&quot;:1.27084016889560 }
+{ &quot;t&quot;:&quot;00:20:48&quot;, &quot;l&quot;:&quot;Kx&quot;, &quot;s&quot;:0.75081624169099 }
+{ &quot;t&quot;:&quot;00:20:48&quot;, &quot;l&quot;:&quot;AB&quot;, &quot;s&quot;:1.27075393755630 }
+{ &quot;t&quot;:&quot;00:20:49&quot;, &quot;l&quot;:&quot;Kx&quot;, &quot;s&quot;:0.70063111891872 }
+{ &quot;t&quot;:&quot;00:20:49&quot;, &quot;l&quot;:&quot;AC&quot;, &quot;s&quot;:1.27107110709860 }
+{ &quot;t&quot;:&quot;00:20:49&quot;, &quot;l&quot;:&quot;Kx&quot;, &quot;s&quot;:0.72590991540959 }
+{ &quot;t&quot;:&quot;00:20:49&quot;, &quot;l&quot;:&quot;AC&quot;, &quot;s&quot;:1.27091973568450 }
+{ &quot;t&quot;:&quot;00:20:49&quot;, &quot;l&quot;:&quot;Kx&quot;, &quot;s&quot;:0.66028591441481 }</pre>
+</div>
+<div class="section" id="disarm-comparison">
+<h1><a class="toc-backref" href="#id12"><span class="sectnum">12</span> Disarm Comparison</a></h1>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 21%" />
+<col style="width: 25%" />
+<col style="width: 21%" />
+<col style="width: 7%" />
+</colgroup>
+<thead>
+<tr><th class="head" colspan="2"><p>Run 1</p></th>
+<th class="head" colspan="2"><p>Run 2</p></th>
+<th class="head"></th>
+</tr>
+<tr><th class="head"><p>Console</p></th>
+<th class="head"><p>Keypad</p></th>
+<th class="head"><p>Console</p></th>
+<th class="head"><p>Keypad</p></th>
+<th class="head"></th>
+</tr>
+</thead>
+<tbody>
+<tr><td><p></p></td>
+<td><p>AK</p></td>
+<td></td>
+<td><p>AK</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr><td><p>Ix</p></td>
+<td></td>
+<td><p>Ix</p></td>
+<td></td>
+<td><p>✅</p></td>
+</tr>
+<tr><td><p>Ix</p></td>
+<td></td>
+<td><p>Ix</p></td>
+<td></td>
+<td><p>✅</p></td>
+</tr>
+<tr><td><p></p></td>
+<td></td>
+<td><p>AH</p></td>
+<td></td>
+<td><p>❗️</p></td>
+</tr>
+<tr><td><p></p></td>
+<td></td>
+<td></td>
+<td><p>Kx</p></td>
+<td><p>❗️</p></td>
+</tr>
+<tr><td><p></p></td>
+<td></td>
+<td><p>AH</p></td>
+<td></td>
+<td><p>❗️</p></td>
+</tr>
+<tr><td><p></p></td>
+<td></td>
+<td></td>
+<td><p>Kx</p></td>
+<td><p>❗️</p></td>
+</tr>
+<tr><td><p></p></td>
+<td></td>
+<td><p>AC</p></td>
+<td></td>
+<td><p>❗️</p></td>
+</tr>
+<tr><td><p></p></td>
+<td></td>
+<td></td>
+<td><p>Kx</p></td>
+<td><p>❗️</p></td>
+</tr>
+<tr><td><p></p></td>
+<td></td>
+<td><p>AC</p></td>
+<td></td>
+<td><p>❗️</p></td>
+</tr>
+<tr><td><p></p></td>
+<td></td>
+<td></td>
+<td><p>Kx</p></td>
+<td><p>❗️</p></td>
+</tr>
+<tr><td><p>AJ</p></td>
+<td></td>
+<td><p>AJ</p></td>
+<td></td>
+<td><p>✅</p></td>
+</tr>
+<tr><td><p></p></td>
+<td><p>Kx</p></td>
+<td></td>
+<td><p>Kx</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr><td><p>AJ</p></td>
+<td></td>
+<td><p>AJ</p></td>
+<td></td>
+<td><p>✅</p></td>
+</tr>
+<tr><td><p></p></td>
+<td><p>Kx</p></td>
+<td></td>
+<td><p>Kx</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr><td><p>AC</p></td>
+<td></td>
+<td><p>AC</p></td>
+<td></td>
+<td><p>✅</p></td>
+</tr>
+<tr><td><p></p></td>
+<td><p>Kx</p></td>
+<td></td>
+<td><p>Kx</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr><td><p>AC</p></td>
+<td></td>
+<td><p>AC</p></td>
+<td></td>
+<td><p>✅</p></td>
+</tr>
+<tr><td><p></p></td>
+<td><p>Kx</p></td>
+<td></td>
+<td><p>Kx</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr><td><p>AB</p></td>
+<td></td>
+<td><p>AB</p></td>
+<td></td>
+<td><p>✅</p></td>
+</tr>
+<tr><td><p></p></td>
+<td><p>Kx</p></td>
+<td></td>
+<td><p>Kx</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr><td><p>AB</p></td>
+<td></td>
+<td><p>AB</p></td>
+<td></td>
+<td><p>✅</p></td>
+</tr>
+<tr><td><p></p></td>
+<td><p>Kx</p></td>
+<td></td>
+<td><p>Kx</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr><td><p>AC</p></td>
+<td></td>
+<td><p>AC</p></td>
+<td></td>
+<td><p>✅</p></td>
+</tr>
+<tr><td><p></p></td>
+<td><p>Kx</p></td>
+<td></td>
+<td><p>Kx</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr><td><p>AC</p></td>
+<td></td>
+<td><p>AC</p></td>
+<td></td>
+<td><p>✅</p></td>
+</tr>
+<tr><td><p></p></td>
+<td><p>Kx</p></td>
+<td></td>
+<td><p>Kx</p></td>
+<td><p>✅</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="synthetic-disarms">
+<h1><a class="toc-backref" href="#id13"><span class="sectnum">13</span> Synthetic Disarms</a></h1>
+<p>Disarms are repeatable enough that I should be able to synthesise one. Simple, yeah?</p>
+<ul class="simple">
+<li><p>Collect a disarm</p></li>
+<li><p>Pretend I'm the keypad</p></li>
+<li><p>Spit pre-cooked packets at the console</p></li>
+<li><p>Win?</p></li>
+<li><p>No win :(</p></li>
+</ul>
+<p>I couldn't make this work. Why not?</p>
+<ul class="simple">
+<li><p>Timing isn't right?</p>
+<ul>
+<li><p>Entirely possible.</p></li>
+</ul>
+</li>
+<li><p>Attribution to keypad/console isn't right?</p>
+<ul>
+<li><p>Possible I guess?</p></li>
+</ul>
+</li>
+<li><p>I'm missing some other communication channel?</p>
+<ul>
+<li><p>Don't think so: couldn't find anything else in 433/868/902 or .au LIPD 915-928</p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="why-disarm">
+<h1><a class="toc-backref" href="#id14"><span class="sectnum">14</span> Why Disarm?</a></h1>
+<ul class="simple">
+<li><p>Shows in logs, somewhere I guess?</p></li>
+<li><p>Alarm monitoring company earns their keep</p></li>
+<li><p>Someone gets a phone call?</p></li>
+</ul>
+</div>
+<div class="section" id="alternatively">
+<h1><a class="toc-backref" href="#id15"><span class="sectnum">15</span> Alternatively...</a></h1>
+<ul class="simple">
+<li><p>Motion alert is a (per site?) static packet</p></li>
+<li><p>Reflexive jamming!</p></li>
+<li><p>Watch for the distinctive start of one of these, when you see it jam until the end</p></li>
+<li><p>Needs <em>fast</em> turnaround between detection and jamming</p>
+<ul>
+<li><p>27ms packet, can identify in 12.8ms, need to turnaround in &lt; 14.2ms</p></li>
+</ul>
+</li>
+<li><p>I guess I'm writing CC1111 firmware now :(</p></li>
+</ul>
+</div>
+<div class="section" id="or-alternatively-alternatively">
+<h1><a class="toc-backref" href="#id16"><span class="sectnum">16</span> Or, alternatively alternatively...</a></h1>
+<ul class="simple">
+<li><p>Console heartbeat is every 4 minutes, like clockwork</p></li>
+<li><p>Trivially detectable (static pattern every time)</p></li>
+<li><p>What if we just jam everything whenever the watchdog isn't looking?</p></li>
+</ul>
+</div>
+<div class="section" id="what-s-the-time-mr-wolf">
+<h1><a class="toc-backref" href="#id17"><span class="sectnum">17</span> What's the time, Mr. Wolf?</a></h1>
+<pre class="literal-block">10 wait for heartbeat to complete
+20 jam for 230 seconds, loot the joint
+30 stand still
+40 goto 10</pre>
+<p>And you get 3m50s to do whatever you like, stand still for 10 seconds, and off you go again. Works great, no TROUBLE!</p>
+</div>
+<div class="section" id="todo">
+<h1><a class="toc-backref" href="#id18"><span class="sectnum">18</span> TODO</a></h1>
+<ul class="simple">
+<li><p>Buy a keypad (but no console to enroll against)</p></li>
+<li><p>Move keypad out of range, relay comms (disruptive to alarm owner)</p></li>
+<li><p>Dump keypad RAM/firmware (can't be arsed)</p></li>
+</ul>
+</div>
+<div class="section" id="finally">
+<h1><a class="toc-backref" href="#id19"><span class="sectnum">19</span> Finally</a></h1>
+<ul class="simple">
+<li><p>Alarm owner doesn't care: their threat is junkies looking for crap to sell, not hacking ninjas</p></li>
+</ul>
+</div>
+</div>
+</body>
+</html>
